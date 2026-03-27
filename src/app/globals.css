@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  --color-gold: #c9a84c;
+  --color-gold-hover: #e0be5c;
+  --color-bg-black: #0a0a0a;
+  --color-platinum: #e8e8e8;
+  --color-crimson: #8b0000;
+  
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+
+  --animate-reveal-up: reveal-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  --animate-bounce-slow: bounce 2s infinite;
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #e8e8e8;
+  --gold: #c9a84c;
+}
+
+@layer base {
+  * {
+    @apply border-white/10;
+    cursor: none;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-bg-black text-platinum font-sans antialiased selection:bg-gold/30 selection:text-gold;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-normal;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08];
+  }
+  
+  .text-gradient-gold {
+    @apply bg-gradient-to-tr from-gold via-gold-hover to-gold bg-clip-text text-transparent;
+  }
+}
+
+/* Custom Hide Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #c9a84c;
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  * {
+    cursor: auto !important;
+  }
+}

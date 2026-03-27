@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  carMake   String
+  service   String
+  price     Float    @default(0)
+  date      String   // Stored as YYYY-MM-DD
+  time      String   // e.g. "09:00 AM"
+  status    String   @default("pending") // "pending" | "confirmed"
+  createdAt DateTime @default(now())
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model BlockedDate {
+  id        String   @id @default(cuid())
+  date      String   @unique // Stored as YYYY-MM-DD
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  price       Float
+  duration    String
+  createdAt   DateTime @default(now())
+}
