@@ -43,6 +43,7 @@ export async function sendBookingConfirmation(email: string, details: {
 }) {
   try {
     const transporter = await getTransporter();
+    const adminEmail = process.env.ADMIN_EMAIL || "daremc2123@gmail.com";
 
     const htmlContent = `
       <div style="font-family: 'Playfair Display', serif; background-color: #0a0a0a; color: #e8e8e8; padding: 60px; line-height: 1.6;">
@@ -64,15 +65,31 @@ export async function sendBookingConfirmation(email: string, details: {
       </div>
     `;
 
+    // 1. Send to the Client (will fail gracefully if Resend domain isn't verified)
+    try {
+      await transporter.sendMail({
+        from: process.env.FROM_EMAIL || '"Petrov Detailing" <onboarding@resend.dev>',
+        to: email,
+        subject: "PETROV | Appointment Confirmed",
+        html: htmlContent,
+      });
+      console.log(`[MAIL] Dispatching confirmation to client: ${email}`);
+    } catch (clientErr) {
+      console.error(`[MAIL] Could not send to client (Likely Resend Sandbox): ${email}`);
+    }
+
+    // 2. ALWAYS send to the Admin so the owner gets the notification! 
+    const adminNoticeHtml = htmlContent + `<div style="margin-top: 20px; color: #c9a84c; border: 1px dashed #c9a84c; padding: 10px;"><strong>ADMIN NOTICE:</strong> A client (${email}) booked this appointment.</div>`;
+    
     const info = await transporter.sendMail({
-      from: process.env.FROM_EMAIL || '"Petrov Detailing" <reservations@petrovdetailing.com>',
-      to: email,
-      subject: "PETROV | Appointment Confirmed",
-      html: htmlContent,
+      from: process.env.FROM_EMAIL || '"Petrov Detailing" <onboarding@resend.dev>',
+      to: adminEmail,
+      subject: `NEW BOOKING CONFIRMED: ${details.name} - ${details.service}`,
+      html: adminNoticeHtml,
     });
 
     console.log('----------------------------------------------------');
-    console.log(`[MAIL] Dispatching confirmation to: ${email}`);
+    console.log(`[MAIL] Sent admin copy to: ${adminEmail}`);
     if (!process.env.SMTP_USER) {
       console.log(`[MAIL] Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
     } else {
@@ -86,3 +103,4 @@ export async function sendBookingConfirmation(email: string, details: {
     return false;
   }
 }
+
